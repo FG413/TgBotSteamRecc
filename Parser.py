@@ -100,4 +100,3 @@ from operator import itemgetter
 
 result = sorted(result, key=itemgetter(2), reverse=True)
 result = result[0:20]
-print(result)
