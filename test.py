@@ -2,8 +2,12 @@ import telebot
 import sqlite3
 from telebot import types
 
-bot = telebot.TeleBot('6880357616:AAE-4K9sEO02HVMF9VKTb5frlwWDEFXNWNY')
+import Parser
+import algoritm
+import pandas as pd
 
+bot = telebot.TeleBot('6880357616:AAE-4K9sEO02HVMF9VKTb5frlwWDEFXNWNY')
+d = {}
 
 @bot.message_handler(commands=['start'])
 def main(message):
@@ -37,36 +41,46 @@ def main(message):
 
 @bot.message_handler(commands=['setid'])
 def main(message):
-    bot.send_message(message.chat.id, 'пожалуйста, укажите свой steam id')
+    bot.send_message(message.chat.id, 'пожалуйста, укажите свой steamid')
     bot.register_next_step_handler(message, read)
 
 
 def read(message):
     user_id = message.chat.id
     steam = message.text.strip()
+    d[user_id]=steam
     print(user_id)
-    conn = sqlite3.connect('userdata.csv')
-    cur = conn.cursor()
-    cur.execute(f"INSERT INTO users (id, steam) VALUES ('%s','%s' )" % (user_id, steam))
-    user_id = 1
-    cur.execute(f"INSERT INTO users (id, steam) VALUES ('%s','%s' )" % (user_id, steam))
-    cur.execute('SELECT * FROM users')
-    users = cur.fetchall()
-    print(users)
-    cur.close()
-    conn.close()
+    #conn = sqlite3.connect('userdata.csv')
+    #cur = conn.cursor()
+    #cur.execute(f"INSERT INTO users (id, steam) VALUES ('%s','%s' )" % (user_id, steam))
+    #user_id = 1
+   # cur.execute(f"INSERT INTO users (id, steam) VALUES ('%s','%s' )" % (user_id, steam))
+    #cur.execute('SELECT * FROM users')
+    #users = cur.fetchall()
+   # print(users)
+    #cur.close()
+   # conn.close()
     bot.send_message(message.chat.id, 'id считан')
 
-
+dset = pd.read_csv("steam_df.csv")
+dset = dset.drop("Unnamed: 0", axis=1)
 @bot.message_handler(commands=['getrecommendation'])
 def main(message):
     markup = types.InlineKeyboardMarkup()
     markup.add(
         types.InlineKeyboardButton('Страница игры в steam', url='https://store.steampowered.com/app/504230/Celeste/'))
     text = (
-        'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
+        'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. '
+        'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
     file = open('./header.jpg', 'rb')
-    bot.send_photo(message.chat.id, file, caption='<b>Celeste</b>', parse_mode='html')
+    par = Parser.pars(d.get(message.chat.id))
+    print(par)
+    df =pd.DataFrame(par, columns=['user','appid', 'rating'])
+
+    print(df)
+    print(df.axes)
+    answer = list(algoritm.proxy(df))
+    bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
     bot.send_message(message.chat.id, '<b>Дата выхода:</b> <u>25 янв. 2018</u>\n<b>Описание:</b> В платформере от '
                                       'создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине '
                                       'горы Селеста. Преодолевай сотни хорошо продуманных сложностей, '
