@@ -66,26 +66,30 @@ dset = pd.read_csv("steam_df.csv")
 dset = dset.drop("Unnamed: 0", axis=1)
 @bot.message_handler(commands=['getrecommendation'])
 def main(message):
-    markup = types.InlineKeyboardMarkup()
-    markup.add(
-        types.InlineKeyboardButton('Страница игры в steam', url='https://store.steampowered.com/app/504230/Celeste/'))
-    text = (
-        'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. '
-        'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
-    file = open('./header.jpg', 'rb')
     par = Parser.pars(d.get(message.chat.id))
     print(par)
-    df =pd.DataFrame(par, columns=['user','appid', 'rating'])
-
+    df = pd.DataFrame(par, columns=['user', 'appid', 'rating'])
     print(df)
     print(df.axes)
     answer = list(algoritm.proxy(df))
-    bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
-    bot.send_message(message.chat.id, '<b>Дата выхода:</b> <u>25 янв. 2018</u>\n<b>Описание:</b> В платформере от '
-                                      'создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине '
-                                      'горы Селеста. Преодолевай сотни хорошо продуманных сложностей, '
-                                      'отыскивай тайники и постигай загадку горы.\n<b>Теги:</b>  Платформер на '
-                                      'точность, Сложная, Платформер', parse_mode='html', reply_markup=markup)
+    markup = types.InlineKeyboardMarkup()
+    for i in answer:
+        markup.add(
+        types.InlineKeyboardButton('Страница игры в steam', url=f'https://store.steampowered.com/app/{i}/'))
+        text = (
+            'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. '
+         'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
+        file = open('./header.jpg', 'rb')
+
+
+
+    bot.send_message(message.chat.id,".", reply_markup=markup)
+    #bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
+   # bot.send_message(message.chat.id, '<b>Дата выхода:</b> <u>25 янв. 2018</u>\n<b>Описание:</b> В платформере от '
+   #                                   'создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине '
+    #                                  'горы Селеста. Преодолевай сотни хорошо продуманных сложностей, '
+    #                                  'отыскивай тайники и постигай загадку горы.\n<b>Теги:</b>  Платформер на '
+   #                                   'точность, Сложная, Платформер', parse_mode='html', reply_markup=markup)
 
 
 @bot.message_handler(commands=['getusersdata'])
