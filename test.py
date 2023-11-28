@@ -83,7 +83,7 @@ def main(message):
 
 
 
-    bot.send_message(message.chat.id,".", reply_markup=markup)
+    bot.send_message(message.chat.id,"Вот ваша рекомендация:", reply_markup=markup)
     #bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
    # bot.send_message(message.chat.id, '<b>Дата выхода:</b> <u>25 янв. 2018</u>\n<b>Описание:</b> В платформере от '
    #                                   'создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине '
