@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[37]:
+# In[85]:
 
 
 from surprise import Reader, Dataset, SVD
@@ -59,10 +59,10 @@ def get_recommendations(user_games):
     # Получаем список рекомендованных игр
     recommendations =list(dset.iloc[top_indices[:20]]['appid'])
     recommendations = recommendations[:5] + recommendations[15:20]
+    recommendations = (steam_games.loc[steam_games['appid'].isin(recommendations),                              ['name', 'short_description', 'header_image']]).to_numpy().tolist()
     return recommendations
 
-
-
+first_recommended = get_recommendations(list(our_user[our_user.columns[1]][:])) #первые рекоммендации
 
 def proxy(df):
     x=NoGames(df)
@@ -112,10 +112,10 @@ def generate_recommendationsSVD(user, get_recommend):
     recommendations = []
     recommendations.append(list(predictions_userID['iid']))
     recommendations = recommendations[0]
-    rec_games = df_grouped[df_grouped.appid.isin(recommendations)]
-    return (rec_games.sample(frac=1).to_dict('records'))
+    rec_games = (df_grouped.loc[df_grouped['appid'].isin(recommendations),['name', 'short_description', 'header_image']]).to_numpy().tolist()
+    return rec_games
 
 
 
-print(generate_recommendationsSVD("YUZH1542", 10))
+second_recommended = generate_recommendationsSVD(our_user[our_user.columns[0]][0], 10) #вторые рекоммендации
 
