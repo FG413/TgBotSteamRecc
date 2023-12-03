@@ -1,8 +1,7 @@
 import requests
 import bs4
 from bs4 import BeautifulSoup
-import json
-import csv
+
 import numpy as np
 from scipy.integrate import quad
 from math import sqrt

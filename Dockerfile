@@ -1,0 +1,12 @@
+FROM python:3.9
+
+ADD test.py .
+ADD Parser.py .
+ADD algoritm.py .
+ADD steam_df.csv .
+ADD steam_games.csv .
+ADD tempsnip.png .
+ADD userdata.csv .
+RUN pip install aiogram requests beautifulsoup4 numpy scipy pandas scikit-learn telebot py-xmlparser
+
+CMD ["python", "./test.py"]

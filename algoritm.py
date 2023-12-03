@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.neighbors import NearestNeighbors
-import seaborn as sns
-from operator import itemgetter
-from sklearn.metrics.pairwise import cosine_similarity
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 

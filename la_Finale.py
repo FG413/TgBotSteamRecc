@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 steam_games = pd.read_csv('steam_games.csv', low_memory=False)
-steam_games
+
 
 def NoGames(df):
     for i in df[df.columns[1]]:
@@ -34,7 +34,6 @@ our_user = [['YUZH1542', 381210, 0.8585413273568598], ['YUZH1542', 570, 0.846203
 our_user = pd.DataFrame(our_user, columns=['user', 'appid', 'rating'])
 NoGames(our_user)
 
-
 # Функция для получения рекомендаций
 dset = pd.read_csv("steam_games.csv")
 dset = dset.drop("Unnamed: 0", axis=1)
@@ -42,6 +41,7 @@ tfidf = TfidfVectorizer(stop_words='english')
 data_matrix = tfidf.fit_transform(dset['tags'])
 # Построение матрицы схожести косинусного расстояния
 cosine_similarities = linear_kernel(data_matrix, data_matrix)
+
 
 def get_recommendations(user_games):
     # Индексы игр, которые пользователь уже играл
@@ -57,29 +57,29 @@ def get_recommendations(user_games):
     top_indices = [index for index in top_indices if index not in indices]
 
     # Получаем список рекомендованных игр
-    recommendations =list(dset.iloc[top_indices[:20]]['appid'])
+    recommendations = list(dset.iloc[top_indices[:20]]['appid'])
     recommendations = recommendations[:5] + recommendations[15:20]
-    recommendations = (steam_games.loc[steam_games['appid'].isin(recommendations),                              ['name', 'short_description', 'header_image']]).to_numpy().tolist()
+    recommendations = (steam_games.loc[
+        steam_games['appid'].isin(recommendations), ['name', 'short_description', 'header_image']]).to_numpy().tolist()
     return recommendations
 
-first_recommended = get_recommendations(list(our_user[our_user.columns[1]][:])) #первые рекоммендации
+
+first_recommended = get_recommendations(list(our_user[our_user.columns[1]][:]))  # первые рекоммендации
+
 
 def proxy(df):
-    x=NoGames(df)
+    x = NoGames(df)
     return get_recommendations(list(x[x.columns[1]]))
 
 
-
-users_df = pd.read_csv("steam.csv")
+users_df = pd.read_csv("steam_df.csv")
 NoGames(users_df)
-
-
 
 users_df = pd.concat([users_df, our_user], ignore_index=True)
 users_df = users_df.drop_duplicates()
 
 users_df[users_df.columns[2]] = users_df[users_df.columns[2]] * 5
-users_df=round(users_df,1)
+users_df = round(users_df, 1)
 
 ratings_count = pd.DataFrame(columns=["user", "rating_counter"])
 ratings_count = users_df.groupby('appid')['user'].count() > 10
@@ -87,17 +87,14 @@ ratings_count = ratings_count.loc[ratings_count]
 rating_viable = ratings_count.index.tolist()
 users_df = users_df[users_df['appid'].isin(rating_viable)]
 
-final_df = pd.read_csv("final_df.csv").drop("Unnamed: 0",axis = 1)
+final_df = pd.read_csv("final_df.csv").drop("Unnamed: 0", axis=1)
 final_df = users_df.merge(steam_games, on='appid')
-df_grouped = pd.read_csv("df_grouped.csv").drop("Unnamed: 0",axis = 1)
-
-
-
+df_grouped = pd.read_csv("df_grouped.csv").drop("Unnamed: 0", axis=1)
 
 reader = Reader(rating_scale=(1, 10))
-data   = Dataset.load_from_df(final_df[['user','appid','rating']], reader)
+data = Dataset.load_from_df(final_df[['user', 'appid', 'rating']], reader)
 trainset = data.build_full_trainset()
-model = SVD(n_factors=50, n_epochs=10, lr_all=0.005, reg_all= 0.2)
+model = SVD(n_factors=50, n_epochs=10, lr_all=0.005, reg_all=0.2)
 model.fit(trainset)
 testset = trainset.build_anti_testset()
 predictions = model.test(testset)
@@ -105,17 +102,16 @@ predictions_df = pd.DataFrame(predictions)
 
 
 def generate_recommendationsSVD(user, get_recommend):
-    
     # get the top get_recommend predictions for userID
-    
-    predictions_userID = predictions_df[predictions_df['uid'] == user].                         sort_values(by="est", ascending = False).head(get_recommend)
+
+    predictions_userID = (predictions_df[predictions_df['uid'] == user].
+                          sort_values(by="est", ascending=False).head(get_recommend))
     recommendations = []
     recommendations.append(list(predictions_userID['iid']))
     recommendations = recommendations[0]
-    rec_games = (df_grouped.loc[df_grouped['appid'].isin(recommendations),['name', 'short_description', 'header_image']]).to_numpy().tolist()
+    rec_games = (df_grouped.loc[
+        df_grouped['appid'].isin(recommendations), ['name', 'short_description', 'header_image']]).to_numpy().tolist()
     return rec_games
 
 
-
-second_recommended = generate_recommendationsSVD(our_user[our_user.columns[0]][0], 10) #вторые рекоммендации
-
+second_recommended = generate_recommendationsSVD(our_user[our_user.columns[0]][0], 10)  # вторые рекоммендации
