@@ -72,7 +72,7 @@ def proxy(df):
     return get_recommendations(list(x[x.columns[1]]))
 
 
-users_df = pd.read_csv("steam_df.csv")
+users_df = pd.read_csv("steam.csv")
 NoGames(users_df)
 
 users_df = pd.concat([users_df, our_user], ignore_index=True)

@@ -4,7 +4,7 @@ from telebot import types
 import Parser
 import algoritm
 import pandas as pd
-
+import urllib
 import la_Finale
 
 bot = telebot.TeleBot('6880357616:AAE-4K9sEO02HVMF9VKTb5frlwWDEFXNWNY')
@@ -68,20 +68,29 @@ def main(message):
     par = Parser.pars(d.get(message.chat.id))
     print(par)
     df = pd.DataFrame(par, columns=['user', 'appid', 'rating'])
+    print(df)
     df1 = la_Finale.generate_recommendationsSVD(df[df.columns[0]][0], 10)
-    print(df1)
-    print(df1.axes)
-    answer = list(algoritm.proxy(df))
-    markup = types.InlineKeyboardMarkup()
-    for i in answer:
-        markup.add(
-            types.InlineKeyboardButton('Страница игры в steam', url=f'https://store.steampowered.com/app/{i}/'))
-        text = (
-            'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. '
-            'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
-        file = open('./tempsnip.png', 'rb')
 
-    bot.send_message(message.chat.id, "Вот ваша рекомендация:", reply_markup=markup)
+
+    print(df1)
+
+    markup = types.InlineKeyboardMarkup()
+    for x in range(10):
+        url = df1[x][2]
+        f = open('out.jpg', 'wb')
+        f.write(urllib.request.urlopen(url).read())
+        f.close()
+        img = open('out.jpg', 'rb')
+        bot.send_photo(message.chat.id, img, caption=f'{df1[x][0]}\n\nОписание: {df1[x][1]}', parse_mode='html')
+    #for i in answer:
+    #    markup.add(
+    #        types.InlineKeyboardButton('Страница игры в steam', url=f'https://store.steampowered.com/app/{i}/'))
+    #    text = (
+    #        'В платформере от создателей TowerFall Мэдлин сражается со своими демонами на пути к вершине горы Селеста. '
+    #        'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
+    #    file = open('./tempsnip.png', 'rb')
+
+    #bot.send_message(message.chat.id, f'Вот ваша рекомендация: {df1[0][0]}', reply_markup=markup)
     # bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
 
 
