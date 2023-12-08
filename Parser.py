@@ -33,10 +33,12 @@ def pars(str1):
                 arr.append(0)
             result.append(arr)
     else:
-        url = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=92C3748294E929E419D01B667D0EF944&steamid=' + username + '&include_played_free_games=1&format=xml'
+        url = ('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=92C3748294E929E419D01B667D0EF944'
+               '&steamid=') + username + '&include_played_free_games=1&format=xml'
         response = session.get(url)
         games = BeautifulSoup(response.text, 'xml')
-        a = 'http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=92C3748294E929E419D01B667D0EF944&steamid=' + username + '&format=xml'
+        a = ('http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key'
+             '=92C3748294E929E419D01B667D0EF944&steamid=') + username + '&format=xml'
         rs = session.get(a)
         ans = BeautifulSoup(rs.text, 'xml')
         ans = ans.find_all('message')
@@ -63,7 +65,9 @@ def pars(str1):
 
             result.append(arr)
 
-
+    if result == []:
+        oshibka = "1"
+        return oshibka
     def funct1(x):
         return sqrt(0.2 / x)
 

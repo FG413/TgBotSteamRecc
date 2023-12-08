@@ -67,22 +67,34 @@ dset = dset.drop("Unnamed: 0", axis=1)
 def main(message):
     par = Parser.pars(d.get(message.chat.id))
     print(par)
-    df = pd.DataFrame(par, columns=['user', 'appid', 'rating'])
-    print(df)
-    df1 = la_Finale.generate_recommendationsSVD(df[df.columns[0]][0], 10)
+    if(type(par)!=str):
+        df = pd.DataFrame(par, columns=['user', 'appid', 'rating'])
+        dfp = la_Finale.NoGames(df)
+        print(df)
+        df1 = la_Finale.generate_recommendationsSVD(dfp)
+        df2 = la_Finale.get_recommendations(dfp)
 
+        print(df2)
+        print(df1)
 
-    print(df1)
-
-    markup = types.InlineKeyboardMarkup()
-    for x in range(10):
-        url = df1[x][2]
-        f = open('out.jpg', 'wb')
-        f.write(urllib.request.urlopen(url).read())
-        f.close()
-        img = open('out.jpg', 'rb')
-        bot.send_photo(message.chat.id, img, caption=f'{df1[x][0]}\n\nОписание: {df1[x][1]}', parse_mode='html')
-    #for i in answer:
+        markup = types.InlineKeyboardMarkup()
+        for x in range(7):
+            url = df2[x][2]
+            f = open('out.jpg', 'wb')
+            f.write(urllib.request.urlopen(url).read())
+            f.close()
+            img = open('out.jpg', 'rb')
+            bot.send_photo(message.chat.id, img, caption=f'{df2[x][0]}\n\nОписание: {df2[x][1]}', parse_mode='html')
+        for x in range(3, 8):
+            url = df1[x][2]
+            f = open('out.jpg', 'wb')
+            f.write(urllib.request.urlopen(url).read())
+            f.close()
+            img = open('out.jpg', 'rb')
+            bot.send_photo(message.chat.id, img, caption=f'{df1[x][0]}\n\nОписание: {df1[x][1]}', parse_mode='html')
+    else:
+        bot.send_message(message.chat.id,"Пожалуйста введите корректный steamId")
+    # for i in answer:
     #    markup.add(
     #        types.InlineKeyboardButton('Страница игры в steam', url=f'https://store.steampowered.com/app/{i}/'))
     #    text = (
@@ -90,7 +102,7 @@ def main(message):
     #        'Преодолевай сотни хорошо продуманных сложностей, отыскивай тайники и постигай загадку горы.')
     #    file = open('./tempsnip.png', 'rb')
 
-    #bot.send_message(message.chat.id, f'Вот ваша рекомендация: {df1[0][0]}', reply_markup=markup)
+    # bot.send_message(message.chat.id, f'Вот ваша рекомендация: {df1[0][0]}', reply_markup=markup)
     # bot.send_photo(message.chat.id, file, caption=f'<b>{answer}</b>', parse_mode='html')
 
 
